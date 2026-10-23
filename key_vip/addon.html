@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock - Universal Add-on Editor Pro v3.2 (Cafe Bunny Edition)</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <link rel="stylesheet" href="css/global-theme.css">
+        <script>
+        (function checkAccess() {
+        // ตรวจสอบว่าผู้ใช้เข้าใช้งานผ่านหน้าแรกของระบบหรือไม่
+        if (!sessionStorage.getItem('visited_index')) {
+      alert('กรุณาเริ่มต้นเข้าใช้งานจากหน้าแรกของระบบ');
+      window.location.href = 'index.html'; // เปลี่ยนเส้นทางกลับสู่หน้าแรก
+       }
+        })();
+    </script>
+
+    <!-- เพิ่ม Font Sarabun สำหรับการแสดงผลภาษาไทย -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="copyright-banner">
+    <span>🔒</span>
+    <div>
+        <strong>ประกาศลิขสิทธิ์ (Copyright Notice):</strong> ระบบ โค้ด และไฟล์ผลงานทั้งหมดได้รับการคุ้มครองตามกฎหมายลิขสิทธิ์ พ.ศ. 2537 โดย <strong>© 2026 Nuttsumechan</strong> ห้ามมิให้ทำซ้ำ ดัดแปลง แก้ไข หรือแจกจ่ายโดยไม่ได้รับอนุญาตเป็นลายลักษณ์อักษร
+    </div>
+
+    <form action="about_key_vip.html">
+        <button type="submit" class="btn-cn">
+            <span>← ย้อนกลับ</span>
+        </button>
+    </form>
+</div>
+
+<div class="container">
+    <div class="header-section">
+        <h1>🐰ᩚ‧₊˚ 𝐂𝐚𝐟𝐞 𝐁𝐮่น𝐧𝐲 ‧₊˚ ☁⋅♡</h1>
+        <p class="subtitle">ระบบ Universal Add-on Editor Pro v3.2 สำหรับปรับแต่งและจัดการข้อมูลโปรเจกต์แอดออน</p>
+    </div>
+
+    <div class="setting-panel">
+        <h3>⚙️ การตั้งค่าข้อมูลโปรเจกต์ (Project Config)</h3>
+        <div class="setting-grid">
+            <div>
+                <label>ชื่อแพ็กภายในเกม (In-Game Pack Name)</label>
+                <input type="text" id="addonName" value="cafebunny">
+            </div>
+            <div>
+                <label>ไฟล์ไอคอนปกแอดออน (Pack Icon PNG)</label>
+                <input type="file" id="addonIcon" accept="image/png,image/jpeg,.png,.jpg,.jpeg">
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-add" onclick="addItemRow()">➕ เพิ่มรายการไอเทมใหม่ (Add Item)</button>
+        <div style="display: flex; gap: 10px; align-items: center; font-size: 14px;">
+            <span>ความละเอียดไอคอน:</span> 
+            <select id="globalSize" style="width: auto; padding: 6px 12px;">
+                <option value="16">16 x 16 พิกเซล (Standard)</option>
+                <option value="32" selected>32 x 32 พิกเซล (HD)</option>
+                <option value="64">64 x 64 พิกเซล (Ultra)</option>
+            </select>
+        </div>
+    </div>
+    <p class="model-base-note" style="margin:8px 0 14px;padding:10px 14px;border-radius:8px;background:#fefae0;color:#2b1e1e;border:1px solid #c5a059;font-size:13px;">ℹ️ <strong>หมายเหตุ:</strong> โมเดลพื้นฐานถูกกำหนดให้ใช้รูปแบบ <strong>Head Only</strong> เหมือนกันทุกรายการ ไฟล์ผลงานที่ส่งออกจะใช้โครงสร้างรูปทรง (Geometry) ชุดเดียวกันทั้งหมด</p>
+<div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th width="13%">รหัสไอเทม (ID)</th>
+                    <th width="16%">ชื่อที่แสดงในเกม</th>
+                    <th width="18%">ประเภท / ช่องสวมใส่ (Slot)</th>
+                    <th width="16%">รูปแบบแอนิเมชัน</th>
+                    <th width="16%">องค์ประกอบโมเดล (Base: Head Only)</th>
+                    <th width="10%"><span class="badge badge-rp">RP</span> ไอคอน</th>
+                    <th width="10%"><span class="badge badge-rp">RP</span> สกินโมเดล</th>
+                    <th width="4%" style="text-align:center;">ลบ</th>
+                </tr>
+            </thead>
+            <tbody id="itemTableBody"></tbody>
+        </table>
+    </div>
+
+    <button class="btn btn-gen" onclick="openCopyrightModal()">📦 ดาวน์โหลดชุดไฟล์แอดออนทั้งหมด (.mcaddon)</button>
+</div>
+
+<div class="modal-overlay" id="copyrightModal">
+    <div class="modal-box">
+        <h3 class="modal-title">🔒 เงื่อนไขสิทธิ์และข้อตกลงการใช้งาน (Copyright Agreement)</h3>
+        <div class="modal-content" id="modalText"></div>
+<div class="modal-checkbox-area">
+            <input type="checkbox" id="agreeCheckbox" onchange="toggleDownloadBtn(this)">
+            <label for="agreeCheckbox">ข้าพเจ้าได้อ่านทำความเข้าใจและยอมรับเงื่อนไขลิขสิทธิ์ทั้งหมดของ Nuttsumechan โดยตกลงว่าจะไม่นำแอดออนนี้ไปดัดแปลง คัดลอก หรือจำหน่ายจ่ายแจกในทางที่ผิดระเบียบหรือข้อกำหนด</label>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-close-modal" onclick="closeCopyrightModal()">ยกเลิก (Cancel)</button>
+            <button class="btn btn-confirm-download" id="confirmDownloadBtn" onclick="processDownload()" disabled>ยอมรับและดาวน์โหลด (Accept & Download)</button>
+        </div>
+    </div>
+</div>
+
+<!-- โมเดลแยกตามส่วน -->
+<script src="model-full-body.js"></script>
+<script src="model-body-no-head.js"></script>
+<script src="model-head-only.js"></script>
+<!-- แอนิเมชันแยกตามหน้าที่ -->
+<script src="animation-eye.js"></script>
+<script src="animation-movement.js"></script>
+<script src="animation-fly.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

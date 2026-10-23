@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการและปรับปรุงรหัส UUID สำหรับ Add-on</title>
+
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">
+
+    <script>
+        (function checkAccess() {
+            if (!sessionStorage.getItem('visited_index')) {
+                alert('กรุณาเริ่มต้นเข้าใช้งานจากหน้าแรกของระบบ');
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-light: #be3a3c;
+            --cn-gold: #c5a059;
+            --cn-gold-light: #fefae0;
+            --cn-dark: #2b1e1e;
+            --bg-color: #faf6f0;
+            --card-bg: #ffffff;
+            --border-color: #e6d7c3;
+            --shadow: 0 4px 15px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 25px rgba(158, 42, 43, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.25s ease;
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--border-color) 0.75px, transparent 0.75px);
+            background-size: 20px 20px;
+            color: var(--cn-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            padding: 35px 30px; 
+            border-radius: 18px; 
+            border: 2px solid var(--cn-gold);
+            box-shadow: var(--shadow-hover);
+            max-width: 520px; 
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ลวดลายมุมกรอบสไตล์จีน */
+        .container::before {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+        .container::after {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+
+        .header-icon {
+            display: block;
+            width: 60px;
+            height: auto;
+            margin: 0 auto 10px auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        h2 { 
+            text-align: center; 
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cn-red);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .input-group { 
+            margin-bottom: 18px; 
+            text-align: left;
+        }
+
+        label { 
+            display: block; 
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cn-red);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], input[type="file"] { 
+            width: 100%; 
+            padding: 12px 16px; 
+            background: #fffdfa;
+            border: 1px solid var(--cn-gold);
+            border-radius: 8px;
+            color: var(--cn-dark);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 0 8px rgba(158, 42, 43, 0.2);
+        }
+
+        .btn-cn {
+            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+            color: var(--cn-gold-light);
+            border: 1px solid var(--cn-gold);
+            padding: 12px;
+            width: 100%;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(158, 42, 43, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .btn-cn:hover {
+            background: var(--cn-dark);
+            color: var(--cn-gold);
+            transform: translateY(-2px);
+        }
+
+        .btn-action {
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(135deg, var(--cn-gold), #b8860b);
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+
+        .status-msg { 
+            text-align: center;
+            font-size: 13px;
+            margin-top: 8px;
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* Modal Alert */
+        .custom-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .custom-alert-overlay.active { opacity: 1; visibility: visible; }
+        .custom-alert-box {
+            background: #ffffff; border: 2px solid var(--cn-gold); border-radius: 18px;
+            padding: 30px 25px; width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-alert-overlay.active .custom-alert-box { transform: scale(1); }
+        .custom-alert-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+        .custom-alert-title { color: var(--cn-red); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .custom-alert-msg { color: #555; font-size: 15px; margin-bottom: 22px; line-height: 1.5; }
+        .custom-alert-btn {
+            background: linear-gradient(135deg, var(--cn-gold), #b8860b); color: #ffffff; border: none;
+            padding: 10px 26px; font-family: 'Sarabun', sans-serif; font-size: 15px; font-weight: 700;
+            border-radius: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <form action="about_key_vip.html">
+        <button type="submit" class="btn-cn">
+            <span>← ย้อนกลับ</span>
+        </button>
+    </form>
+
+    <img src="https://i.pinimg.com/originals/31/13/22/31132288733f70e7c05d10bc3a104f59.gif" alt="Icon" class="header-icon">
+    <h2>ระบบจัดการและปรับปรุงรหัส UUID สำหรับ Add-on</h2>
+    <div class="sub-title">ระบบตรวจสอบและซิงโครไนซ์รหัสระบุตัวตน (UUID Synchronization System)</div>
+    
+    <div class="input-group">
+        <label>เลือกไฟล์โปรเจกต์ (.ZIP) ที่ประกอบด้วย RP และ BP</label>
+        <input type="file" id="zipInput" accept=".zip">
+        <div id="status" class="status-msg">พร้อมสำหรับการประมวลผลไฟล์</div>
+    </div>
+
+    <div class="input-group">
+        <label>ชื่อโปรเจกต์ใหม่</label>
+        <input type="text" id="skinName" placeholder="ระบุชื่อโปรเจกต์ที่ต้องการ...">
+    </div>
+
+    <div class="input-group">
+        <label>รายละเอียดโปรเจกต์</label>
+        <input type="text" id="description" placeholder="ระบุคำอธิบายรายละเอียดเพิ่มเติม...">
+    </div>
+
+    <button class="btn-action" onclick="processZip()">ประมวลผลและซิงโครไนซ์รหัสทั้งหมด ➔</button>
+</div>
+
+<!-- Modal Alert -->
+<div id="customAlert" class="custom-alert-overlay">
+    <div class="custom-alert-box">
+        <span id="alertIcon" class="custom-alert-icon">✅</span>
+        <div id="alertTitle" class="custom-alert-title">การแจ้งเตือนจากระบบ</div>
+        <div id="alertMessage" class="custom-alert-msg">ข้อความแจ้งเตือน</div>
+        <button class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>
+    </div>
+</div>
+
+<script>
+function showAlert(icon, title, message) {
+    document.getElementById('alertIcon').innerText = icon;
+    document.getElementById('alertTitle').innerText = title;
+    document.getElementById('alertMessage').innerText = message;
+    document.getElementById('customAlert').classList.add('active');
+}
+
+function closeCustomAlert() {
+    document.getElementById('customAlert').classList.remove('active');
+}
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c=='x'?r:(r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+
+document.getElementById('zipInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+        const zip = await JSZip.loadAsync(file);
+        for (let filename of Object.keys(zip.files)) {
+            if (filename.endsWith("manifest.json")) {
+                const content = await zip.files[filename].async("string");
+                const manifest = JSON.parse(content);
+                document.getElementById('skinName').value = manifest.header.name || "";
+                document.getElementById('description').value = manifest.header.description || "";
+                document.getElementById('status').innerText = "✅ ตรวจพบโครงสร้างไฟล์เรียบร้อยแล้ว";
+                break;
+            }
+        }
+    } catch (err) { console.error(err); }
+});
+
+async function processZip() {
+    const input = document.getElementById('zipInput');
+    const skinName = document.getElementById('skinName').value;
+    const desc = document.getElementById('description').value;
+
+    if (!input.files.length) { 
+        showAlert("⚠️", "เกิดข้อผิดพลาด", "กรุณาเลือกไฟล์โปรเจกต์ (.ZIP) ที่ต้องการดำเนินการก่อนเริ่มการประมวลผล"); 
+        return; 
+    }
+
+    const file = input.files[0];
+    const zip = await JSZip.loadAsync(file);
+    const uuidMap = {};
+
+    for (let filename of Object.keys(zip.files)) {
+        if (filename.endsWith("manifest.json")) {
+            let content = await zip.files[filename].async("string");
+            const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+            const foundUUIDs = content.match(uuidRegex);
+            
+            if (foundUUIDs) {
+                foundUUIDs.forEach(oldUuid => {
+                    if (!uuidMap[oldUuid]) {
+                        uuidMap[oldUuid] = generateUUID();
+                    }
+                });
+            }
+        }
+    }
+
+    for (let filename of Object.keys(zip.files)) {
+        if (filename.endsWith("manifest.json") || filename.endsWith(".js") || filename.endsWith(".json")) {
+            let content = await zip.files[filename].async("string");
+            let isModified = false;
+
+            if (filename.endsWith("manifest.json")) {
+                try {
+                    let manifest = JSON.parse(content);
+                    manifest.header.name = skinName;
+                    manifest.header.description = desc;
+                    if (manifest.modules) {
+                        manifest.modules.forEach(m => { if(m.description) m.description = desc; });
+                    }
+                    content = JSON.stringify(manifest, null, 2);
+                    isModified = true;
+                } catch(e) { console.warn("Parse error in: " + filename); }
+            }
+
+            for (let oldUuid in uuidMap) {
+                if (content.includes(oldUuid)) {
+                    content = content.replace(new RegExp(oldUuid, "g"), uuidMap[oldUuid]);
+                    isModified = true;
+                }
+            }
+
+            if (isModified) {
+                zip.file(filename, content);
+            }
+        }
+    }
+
+    const cleanName = skinName.replace(/§[0-9a-fk-or]/g, "").trim() || "output";
+    const blob = await zip.generateAsync({type:"blob"});
+    saveAs(blob, `${cleanName}.zip`);
+    document.getElementById('status').innerText = "🚀 ดำเนินการซิงโครไนซ์รหัสและส่งออกไฟล์สำเร็จแล้ว";
+    showAlert("🎉", "การทำงานเสร็จสิ้น", "ระบบได้ทำการซิงโครไนซ์รหัสประจำตัว (UUID) และจัดเก็บไฟล์ของคุณเรียบร้อยแล้ว");
+}
+</script>
+</body>
+</html>
