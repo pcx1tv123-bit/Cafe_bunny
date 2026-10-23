@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบฝากงาน</title>
     
-<link rel="icon" href="https://media.discordapp.net/attachments/1079360985317515265/1228743328246403212/7b8118ac-1b6a-4433-9f46-a6d7d05560fd.jpg?ex=6adc33a6&is=6adae226&hm=468d0460e46e3eff153ae5148e62f9e71e58ff5e1ba2efd7a6f270f1f37ad718&=&format=webp&width=640&height=640" type="image/png">
-
+    <link rel="icon" href="https://media.discordapp.net/attachments/1079360985317515265/1228743328246403212/7b8118ac-1b6a-4433-9f46-a6d7d05560fd.jpg?ex=6adc33a6&is=6adae226&hm=468d0460e46e3eff153ae5148e62f9e71e58ff5e1ba2efd7a6f270f1f37ad718&=&format=webp&width=640&height=640" type="image/png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -163,12 +162,26 @@
             box-shadow: 0 6px 20px rgba(158, 42, 43, 0.4);
         }
 
-        .nav-generator {
-            margin-top: 15px;
-            display: inline-block;
-            font-size: 12px;
-            color: #888;
-            text-decoration: underline;
+        /* 📌 ข้อความและลิงก์ Discord ด้านล่าง */
+        .discord-help-text {
+            margin-top: 20px;
+            font-size: 13.5px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .discord-link {
+            color: var(--cn-red);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dashed var(--cn-red);
+            padding-bottom: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .discord-link:hover {
+            color: var(--cn-red-hover);
+            border-bottom-style: solid;
         }
 
         /* 🎨 Modal Alert */
@@ -196,7 +209,7 @@
 
         .custom-alert-box {
             background: #ffffff;
-            border: 2px solid var(--cn-gold);
+            border: 2px solid var(--border-gold);
             border-radius: 18px;
             padding: 30px 25px;
             width: 90%;
@@ -261,17 +274,22 @@
         <div class="card">
             <img src="https://i.pinimg.com/originals/93/92/a8/9392a8260981239f178540ad8b20a51e.gif" class="card-icon" alt="ระบบท่องเที่ยว">
             
-            <h1 class="card-title">ศูนย์รวมระบบงานที่ฝาก</h1>
+            <h1 class="card-title">ศูนย์รวมงาน</h1>
             <span class="card-subtitle">ยินดีต้อนรับเข้าสู่ระบบศูนย์รวมระบบงานที่ฝาก</span>
             
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <input type="email" id="emailInput" class="input-key" placeholder="กรอกอีเมลของคุณ (Email)" required>
-                <input type="text" id="keyCodeInput" class="input-key" placeholder="กรอก Key Code">
+                <input type="text" id="keyCodeInput" class="input-key" placeholder="กรอก คีย์">
                 
                 <button type="submit" class="btn-cn">
                     <span>เข้าสู่ระบบข้อมูล</span>
                 </button>
             </form>
+
+            <!-- 📌 ส่วนข้อความแจ้งเตือนคำขอ Key และลิงก์เข้า Discord -->
+            <div class="discord-help-text">
+                หากยังไม่มี คีย์ สามารถ <a href="https://discord.gg/rgwfDawRQh" target="_blank" class="discord-link">คลิกที่นี่เพื่อเข้าร่วม Discord</a> เพื่อขอรับ คีย์ ได้ครับ
+            </div>
 
         </div>
     </div>
@@ -287,7 +305,7 @@
     </div>
 
     <script>
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1563231519726899240/BIuUjvLTZvgYv36TcviA1c7peRod0nSjfrW7uEe8lM6nUTpwjy8g6g-tCKHDU8dllTiG";
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1563173771022696543/5xUTI2gLbjItbfzzA55nYH2lQWR06HSPVvB9v5USjtZTFfn3lqqXN9U4shU9vfkaR3E1";
         let onAlertCloseCallback = null;
 
         function showAlert(icon, title, message, callback = null) {
@@ -326,7 +344,7 @@
             // 🛑 ระบบตรวจสอบคีย์ซ้ำในเบราว์เซอร์
             const usedKeys = JSON.parse(localStorage.getItem('used_key_codes') || '[]');
             if (usedKeys.includes(keyInput)) {
-                showAlert("🚫", "Key Code ถูกใช้งานแล้ว", "Key Code นี้ถูกนำไปใช้เข้าสู่ระบบเรียบร้อยแล้ว ไม่สามารถใช้ซ้ำได้ครับ");
+                showAlert("🚫", "คีย์ ถูกใช้งานแล้ว", "คีย์ นี้ถูกนำไปใช้เข้าสู่ระบบเรียบร้อยแล้ว ไม่สามารถใช้ซ้ำได้ครับ");
                 return;
             }
 
@@ -335,10 +353,10 @@
             try {
                 const payload = {
                     embeds: [{
-                        title: "📥 แจ้งเตือนการใช้งาน Key Code จากหน้าเว็บ",
+                        title: "📥 แจ้งเตือนการใช้งาน คีย์ จากหน้าเว็บ",
                         color: isVipKey ? 15844367 : 3447003,
                         fields: [
-                            { name: "🔑 Key Code ที่ใช้ (Key 2)", value: `\`${keyInput}\``, inline: true },
+                            { name: "🔑 คีย์ ที่ใช้ (Key 2)", value: `\`${keyInput}\``, inline: true },
                             { name: "🏷️ ประเภท Key", value: isVipKey ? "⭐ VIP Key" : "🔑 Standard Key", inline: true },
                             { name: "📧 อีเมลผู้ใช้งาน", value: `\`${emailInput}\``, inline: false }
                         ],
@@ -356,7 +374,7 @@
                 usedKeys.push(keyInput);
                 localStorage.setItem('used_key_codes', JSON.stringify(usedKeys));
 
-                showAlert("🎉", "ตรวจสอบสำเร็จ!", "ตรวจสอบ Key และส่งข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว", () => {
+                showAlert("🎉", "ตรวจสอบสำเร็จ!", "ตรวจสอบ คีย์ และส่งข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว", () => {
                     if (isVipKey) {
                         sessionStorage.setItem('vip_access', 'true');
                         window.location.href = 'key_vip/about_key_vip.html';
