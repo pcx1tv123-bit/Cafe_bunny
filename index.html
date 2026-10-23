@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบฝากงาน</title>
+    
+    <link rel="icon" href="https://media.discordapp.net/attachments/1283550912240943116/1286293143519625227/a1b95347-2363-4d8b-8dfe-e79787d846a4.gif?ex=6ad8a6d7&is=6ad75557&hm=3d7dd724463a35afce4d33c53e72dd2d299f7e0543887787bde2542167133c56&=&width=384&height=384" type="image/png">   
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        sessionStorage.setItem('visited_index', 'true');
+    </script>
+
+    <style>
+        :root {
+            --cn-red: #9e2a2b;
+            --cn-red-hover: #781f20;
+            --cn-gold: #d4af37;
+            --cn-gold-light: #f3e5ab;
+            --cn-dark: #1a0f0f;
+            --cn-bg: #faf6f0;
+            --card-bg: #ffffff;
+            --border-gold: #c5a059;
+            --shadow: 0 10px 30px rgba(158, 42, 43, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background-color: var(--cn-bg);
+            background-image: radial-gradient(var(--border-gold) 0.75px, transparent 0.75px);
+            background-size: 20px 20px;
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--cn-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        .hero-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 16px;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--cn-gold), var(--cn-red));
+            box-shadow: var(--shadow);
+        }
+
+        .hero-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 35px 30px;
+            border: 2px solid var(--border-gold);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+        .card::after {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--cn-gold);
+            font-size: 18px;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .card-title {
+            color: var(--cn-red);
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .card-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .input-key {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            text-align: center;
+            outline: none;
+            background-color: #fffdfa;
+        }
+
+        .input-key:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 0 8px rgba(158, 42, 43, 0.2);
+        }
+
+        .btn-cn {
+            background: linear-gradient(135deg, var(--cn-red), #be3a3c);
+            color: var(--cn-gold-light);
+            border: 1px solid var(--cn-gold);
+            padding: 14px 28px;
+            width: 100%;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .btn-cn:hover {
+            background: linear-gradient(135deg, var(--cn-red-hover), var(--cn-red));
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.4);
+        }
+
+        .nav-generator {
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 12px;
+            color: #888;
+            text-decoration: underline;
+        }
+
+        /* 🎨 Modal Alert */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-alert-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-alert-box {
+            background: #ffffff;
+            border: 2px solid var(--cn-gold);
+            border-radius: 18px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .custom-alert-overlay.active .custom-alert-box {
+            transform: scale(1);
+        }
+
+        .custom-alert-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .custom-alert-title {
+            color: var(--cn-red);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .custom-alert-msg {
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .custom-alert-btn {
+            background: linear-gradient(135deg, var(--cn-gold), #b8860b);
+            color: #ffffff;
+            border: none;
+            padding: 10px 26px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+
+        .custom-alert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 134, 11, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="hero-container">
+            <img src="https://i.pinimg.com/1200x/56/21/b3/5621b33d530b2bb2437d61f404538c81.jpg" alt="ภาพปกท่องเที่ยว" class="hero-img">
+        </div>
+
+        <div class="card">
+            <img src="https://i.pinimg.com/originals/93/92/a8/9392a8260981239f178540ad8b20a51e.gif" class="card-icon" alt="ระบบท่องเที่ยว">
+            
+            <h1 class="card-title">ศูนย์รวมระบบงานที่ฝาก</h1>
+            <span class="card-subtitle">ยินดีต้อนรับเข้าสู่ระบบศูนย์รวมระบบงานที่ฝาก</span>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" id="emailInput" class="input-key" placeholder="กรอกอีเมลของคุณ (Email)" required>
+                <input type="text" id="keyCodeInput" class="input-key" placeholder="กรอก Key Code (ถ้ามี)">
+                
+                <button type="submit" class="btn-cn">
+                    <span>เข้าสู่ระบบข้อมูล</span>
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Modal Alert -->
+    <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <span id="alertIcon" class="custom-alert-icon">✅</span>
+            <div id="alertTitle" class="custom-alert-title">แจ้งเตือนระบบ</div>
+            <div id="alertMessage" class="custom-alert-msg">ข้อความแจ้งเตือน</div>
+            <button id="alertBtn" class="custom-alert-btn" onclick="closeCustomAlert()">ตกลง</button>
+        </div>
+    </div>
+
+    <script>
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1563173771022696543/5xUTI2gLbjItbfzzA55nYH2lQWR06HSPVvB9v5USjtZTFfn3lqqXN9U4shU9vfkaR3E1";
+        let onAlertCloseCallback = null;
+
+        function showAlert(icon, title, message, callback = null) {
+            document.getElementById('alertIcon').innerText = icon;
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            
+            onAlertCloseCallback = callback;
+            document.getElementById('customAlert').classList.add('active');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').classList.remove('active');
+            if (onAlertCloseCallback) {
+                onAlertCloseCallback();
+                onAlertCloseCallback = null;
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('emailInput').value.trim();
+            const keyInput = document.getElementById('keyCodeInput').value.trim();
+
+            if (keyInput === "") {
+                window.location.href = "about.html";
+                return;
+            }
+
+            if (!emailInput) {
+                showAlert("⚠️", "กรุณากรอกข้อมูล", "กรุณากรอกอีเมลก่อนทำรายการครับ");
+                return;
+            }
+
+            // 🛑 ระบบตรวจสอบคีย์ซ้ำในเบราว์เซอร์
+            const usedKeys = JSON.parse(localStorage.getItem('used_key_codes') || '[]');
+            if (usedKeys.includes(keyInput)) {
+                showAlert("🚫", "Key Code ถูกใช้งานแล้ว", "Key Code นี้ถูกนำไปใช้เข้าสู่ระบบเรียบร้อยแล้ว ไม่สามารถใช้ซ้ำได้ครับ");
+                return;
+            }
+
+            const isVipKey = keyInput.startsWith("VIP-");
+
+            try {
+                const payload = {
+                    embeds: [{
+                        title: "📥 แจ้งเตือนการใช้งาน Key Code จากหน้าเว็บ",
+                        color: isVipKey ? 15844367 : 3447003,
+                        fields: [
+                            { name: "🔑 Key Code ที่ใช้ (Key 2)", value: `\`${keyInput}\``, inline: true },
+                            { name: "🏷️ ประเภท Key", value: isVipKey ? "⭐ VIP Key" : "🔑 Standard Key", inline: true },
+                            { name: "📧 อีเมลผู้ใช้งาน", value: `\`${emailInput}\``, inline: false }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+
+                await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // 📌 บันทึกคีย์ที่ใช้แล้วลงใน localStorage เพื่อบล็อกการใช้ซ้ำ
+                usedKeys.push(keyInput);
+                localStorage.setItem('used_key_codes', JSON.stringify(usedKeys));
+
+                showAlert("🎉", "ตรวจสอบสำเร็จ!", "ตรวจสอบ Key และส่งข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว", () => {
+                    if (isVipKey) {
+                        sessionStorage.setItem('vip_access', 'true');
+                        window.location.href = 'key_vip/about_key_vip.html';
+                    } else {
+                        sessionStorage.setItem('std_access', 'true');
+                        window.location.href = 'key/about_key.html';
+                    }
+                });
+
+            } catch (error) {
+                console.error("ส่งข้อมูล Webhook ไม่สำเร็จ:", error);
+                showAlert("❌", "เกิดข้อผิดพลาด", "ไม่สามารถส่งข้อมูลเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง");
+            }
+        }
+    </script>
+</body>
+</html>
