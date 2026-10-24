@@ -109,7 +109,6 @@ function addItemRow() {
             <input type="file" class="file-skin" accept="image/png" onchange="updateFileStatus(this)">
             <div class="file-status" style="font-size:10px; color:#6fa073; margin-top:4px; font-weight:bold;"></div>
         </td>
-        <td style="text-align:center;"><span class="remove-btn" onclick="removeItemRow('${row.id}')">✖</span></td>
     `;
     tbody.appendChild(row);
     itemCount++;
@@ -185,25 +184,26 @@ async function buildAddonPack(globalZip, rows, packInGameName, packDesc, NAMESPA
         row.querySelector('.item-slot')?.value?.startsWith('slot.armor')
     );
     if (hasArmorWithAnimations) {
+        // ส่งออกเฉพาะแอนิเมชันที่ attachable เรียกใช้จริง แยกไฟล์ตามชื่อ
+        // เลือกแหล่งข้อมูลที่ถูกต้อง: eye จาก eye, fly จาก fly, walk จาก movement
         const animationLibraries = window.ANIMATION_LIBRARY || {};
-        const exportedAnimations = new Map();
-
-        ['eye', 'movement', 'face'].forEach(libraryName => {
-            const library = animationLibraries[libraryName];
-            if (!library || !library.animations) return;
-            Object.entries(library.animations).forEach(([identifier, animationData]) => {
-                const shortName = identifier.split('.').pop();
-                if (!shortName || exportedAnimations.has(shortName)) return;
-                exportedAnimations.set(shortName, {
-                    format_version: library.format_version || '1.8.0',
-                    animations: { [identifier]: animationData }
-                });
-            });
-        });
-
-        exportedAnimations.forEach((animationFileData, animationName) => {
-            rpAnims.file(`animation.${safeFileName(animationName)}.json`, JSON.stringify(animationFileData, null, 2));
-        });
+        const animationSources = {
+            eye: animationLibraries.eye,
+            fly: animationLibraries.fly,
+            walk: animationLibraries.movement
+        };
+        for (const [shortName, library] of Object.entries(animationSources)) {
+            if (!library || !library.animations) continue;
+            const found = Object.entries(library.animations).find(([identifier]) =>
+                identifier === `animation.cafebunny.${shortName}`
+            );
+            if (!found) continue;
+            const [identifier, animationData] = found;
+            rpAnims.file(`animation.${shortName}.json`, JSON.stringify({
+                format_version: library.format_version || "1.8.0",
+                animations: { [identifier]: animationData }
+            }, null, 2));
+        }
     }
     const rpTexItems = rpFolder.folder("textures/items");
     const rpTexSkin = rpFolder.folder("textures/entity/pamobile");
@@ -220,11 +220,14 @@ async function buildAddonPack(globalZip, rows, packInGameName, packDesc, NAMESPA
         const slotValue = row.querySelector('.item-slot').value;
         const modelType = row.querySelector('.model-type').value;
         const selectedModelPart = row.querySelector('.model-part').value;
-        const modelPart = 'head_only';
+        const modelPart = row.querySelector('.model-part')?.value || 'head_only';
         const iconFile = row.querySelector('.file-icon').files[0];
         const skinFile = row.querySelector('.file-skin').files[0];
 
         if (!id) continue;
+        if (slotValue.startsWith("slot.armor") && !skinFile) {
+            throw new Error(`ไอเทม ${id} ยังไม่ได้เลือกไฟล์สกินโมเดล PNG จึงไม่สามารถแสดงโมเดลในเกมได้`);
+        }
 
         const fullIdentifier = `${NAMESPACE}:${id}`;
         createdItemIdentifiers.push(fullIdentifier);
@@ -309,6 +312,12 @@ async function buildAddonPack(globalZip, rows, packInGameName, packDesc, NAMESPA
             rpAttach.file(`${id}.json`, stringifyJsonWithCopyright(attachJSON));
 
             const modelJSON = getModelJSON(modelPart, id);
+            // geometry identifier ต้องตรงกับค่า geometry ใน attachable ทุกตัว
+            if (Array.isArray(modelJSON["minecraft:geometry"])) {
+                modelJSON["minecraft:geometry"].forEach(geometry => {
+                    if (geometry.description) geometry.description.identifier = `geometry.${id}`;
+                });
+            }
             rpModels.file(`model.geo.${id}.json`, stringifyJsonWithCopyright(modelJSON));
         }
 
