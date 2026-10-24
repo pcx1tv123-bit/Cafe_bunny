@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ศูนย์รวมงาน</title>
-
+    <title>เครื่องมือสร้างแอดออนเพลง Minecraft Bedrock (.mcpack)</title>
+    
     <link rel="icon" href="https://media.discordapp.net/attachments/1079360985317515265/1228743328246403212/7b8118ac-1b6a-4433-9f46-a6d7d05560fd.jpg?ex=6adc33a6&is=6adae226&hm=468d0460e46e3eff153ae5148e62f9e71e58ff5e1ba2efd7a6f270f1f37ad718&=&format=webp&width=640&height=640" type="image/png">
 
     <script>
@@ -16,706 +16,1185 @@
         })();
     </script>
 
+    <!-- Google Fonts: Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- JSZip Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         :root {
             --cn-red: #9e2a2b;
-            --cn-red-light: #be3a3c;
-            --cn-gold: #c5a059;
-            --cn-gold-light: #fefae0;
-            --cn-dark: #2b1e1e;
-            --bg-color: #faf6f0;
+            --cn-red-hover: #781f20;
+            --cn-gold: #d4af37;
+            --cn-gold-light: #f3e5ab;
+            --cn-dark: #1a0f0f;
+            --cn-bg: #faf6f0;
             --card-bg: #ffffff;
-            --border-color: #e6d7c3;
-            --shadow: 0 4px 15px rgba(0,0,0,0.06);
-            --shadow-hover: 0 10px 25px rgba(158, 42, 43, 0.15);
-            --badge-new: #d90429;
+            --border-gold: #c5a059;
+            --shadow: 0 10px 30px rgba(158, 42, 43, 0.12);
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.25s ease;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--cn-bg);
+            background-image: radial-gradient(var(--border-gold) 0.75px, transparent 0.75px);
+            background-size: 20px 20px;
             font-family: 'Sarabun', sans-serif;
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px 12px;
             color: var(--cn-dark);
-            scroll-behavior: smooth;
-        }
-
-        .main-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* --- Header Section --- */
-        .header-section {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 25px auto;
-        }
-
-        .header-icon {
-            width: 65px;
-            height: auto;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        }
-
-        .main-title {
-            color: var(--cn-red);
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .main-subtitle {
-            color: #666;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        /* --- Creator Info Card --- */
-        .creator-card {
-            background-color: var(--card-bg);
-            max-width: 500px;
-            margin: 0 auto 40px auto;
-            padding: 30px;
-            border: 2px solid var(--cn-gold);
-            border-radius: 18px;
-            box-shadow: var(--shadow-hover);
-            text-align: center;
-        }
-
-        .creator-icon {
-            width: 60px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-        .creator-title {
-            color: var(--cn-red);
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px dashed var(--cn-gold);
-        }
-
-        .info-group {
-            text-align: left;
-            margin-bottom: 20px;
-            font-size: 15px;
-            line-height: 1.8;
-        }
-
-        .info-label {
-            font-weight: 700;
-            color: var(--cn-red);
-        }
-
-        .info-link {
-            color: #b91c1c;
-            text-decoration: none;
-            word-break: break-all;
-        }
-
-        .info-link:hover {
-            text-decoration: underline;
-        }
-
-        .btn-cn {
-            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
-            color: var(--cn-gold-light);
-            border: 1px solid var(--cn-gold);
-            padding: 10px;
-            width: 100%;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(158, 42, 43, 0.2);
-        }
-
-        .btn-cn:hover {
-            background: var(--cn-dark);
-            color: var(--cn-gold);
-            transform: translateY(-2px);
-        }
-
-        /* --- Filter & Search Section --- */
-        .filter-section {
-            margin: 0 auto 35px auto;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 18px;
             align-items: center;
         }
 
-        .search-box {
-            position: relative;
+        .container {
             width: 100%;
-            max-width: 550px;
+            max-width: 1100px;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 14px 24px;
-            font-size: 15px;
-            font-family: 'Sarabun', sans-serif;
-            border: 2px solid var(--border-color);
-            border-radius: 30px;
-            outline: none;
-            background-color: #ffffff;
-            box-shadow: var(--shadow);
-        }
-
-        .search-input:focus {
-            border-color: var(--cn-red);
-            box-shadow: 0 6px 20px rgba(158, 42, 43, 0.12);
-        }
-
-        /* --- Section Container --- */
-        .section-container {
-            margin-bottom: 40px;
-            background-color: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(8px);
-            padding: 28px;
-            border-radius: 18px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-        }
-
-        .category-header {
+        /* Responsive Header Bar */
+        .header-bar {
+            background: linear-gradient(135deg, var(--cn-red), #b53234);
+            color: var(--cn-gold-light);
+            border: 2px solid var(--border-gold);
+            border-radius: 16px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 22px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--cn-gold);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .category-header-left {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .category-icon {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-        }
-
-        .category-title {
-            color: var(--cn-red);
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .section-badge {
-            background-color: var(--cn-gold-light);
-            color: var(--cn-dark);
-            border: 1px solid var(--cn-gold);
-            padding: 4px 12px;
+        .header-icon {
+            font-size: 28px;
+            background: rgba(0,0,0,0.15);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 12px;
+            border: 1px solid var(--cn-gold);
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .header-sub {
+            margin: 2px 0 0 0;
             font-size: 12px;
-            font-weight: 600;
+            color: var(--cn-gold-light);
+            opacity: 0.9;
         }
 
-        /* --- Cards Grid --- */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 22px;
-            margin-bottom: 22px;
+        /* Responsive Main Download Button */
+        .btn-export {
+            background: linear-gradient(135deg, var(--cn-gold), #b8860b);
+            color: #ffffff;
+            border: 1px solid #fff;
+            padding: 10px 20px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: auto;
         }
 
+        @media (max-width: 600px) {
+            .btn-export {
+                width: 100%;
+            }
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.5);
+            background: linear-gradient(135deg, #e5be3e, #d4af37);
+        }
+
+        /* Cards Layout */
         .card {
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px;
+            padding: 22px 18px;
+            border: 2px solid var(--border-gold);
+            border-radius: 16px;
             box-shadow: var(--shadow);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
             position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            margin-bottom: 20px;
         }
 
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--cn-gold);
-        }
-
-        .badge-new {
+        .card::before {
+            content: '卍';
             position: absolute;
-            top: 22px;
-            right: 22px;
-            background-color: var(--badge-new);
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(217, 4, 41, 0.4);
-            z-index: 2;
-            letter-spacing: 0.5px;
+            top: 8px;
+            left: 12px;
+            color: var(--cn-gold);
+            font-size: 16px;
+        }
+        .card::after {
+            content: '卍';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--cn-gold);
+            font-size: 16px;
         }
 
-        /* --- Addon Type Badges Style --- */
-        .type-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 6px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-        .type-bp {
-            background-color: #e67e22;
-            color: #ffffff;
-        }
-        .type-rp {
-            background-color: #2980b9;
-            color: #ffffff;
-        }
-        .type-bprp {
-            background-color: #27ae60;
-            color: #ffffff;
-        }
-        .type-website {
-            background-color: #8e44ad;
-            color: #ffffff;
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border-gold);
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .img-wrapper {
-            width: 100%;
-            height: 140px;
-            border-radius: 10px;
-            overflow: hidden;
+        .card-title {
+            color: var(--cn-red);
+            font-size: 17px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-badge {
+            background: var(--cn-red);
+            color: var(--cn-gold-light);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid var(--cn-gold);
+            flex-shrink: 0;
+        }
+
+        /* Banner Notice */
+        .notice-banner {
+            background: #fffdfa;
+            border: 1px solid var(--border-gold);
+            border-left: 5px solid var(--cn-red);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .notice-badge {
+            background: rgba(158, 42, 43, 0.08);
+            color: var(--cn-red);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11.5px;
+            border: 1px solid rgba(158, 42, 43, 0.2);
+        }
+
+        /* Grid System Responsive */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
             margin-bottom: 12px;
-            position: relative;
-            background-color: #f0e9df;
-            display: block;
         }
 
-        .card-img {
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--cn-dark);
+            margin-bottom: 6px;
+        }
+
+        .input-cn {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13.5px;
+            outline: none;
+            background-color: #fffdfa;
+            color: var(--cn-dark);
+        }
+
+        .input-cn:focus {
+            border-color: var(--cn-red);
+            box-shadow: 0 0 8px rgba(158, 42, 43, 0.2);
+        }
+
+        .locked-input {
+            background-color: #f5f2ed;
+            color: #777;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+        }
+
+        /* Icon Uploader Box Responsive */
+        .icon-uploader-box {
+            background: #fffdfa;
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-preview-wrapper {
+            width: 64px;
+            height: 64px;
+            border: 1px dashed var(--border-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #faf6f0;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .icon-preview-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .card:hover .card-img {
-            transform: scale(1.08);
-        }
-
-        .card-title {
-            color: var(--cn-red);
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            display: block;
-            text-decoration: none;
-            line-height: 1.4;
-        }
-
-        .card-desc {
-            color: #555;
-            font-size: 13px;
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-
-        .no-results {
-            text-align: center;
-            font-size: 16px;
-            color: #777;
-            padding: 40px 20px;
-            background-color: #ffffff;
-            border-radius: 16px;
-            margin: 0 auto;
-            border: 1px dashed var(--border-color);
-            display: none;
-        }
-
-        /* --- Scroll to Top Button Style --- */
-        .scrollToTopBtn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
+        .btn-upload-sm {
+            background: var(--cn-red);
             color: var(--cn-gold-light);
-            border: 2px solid var(--cn-gold);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 20px;
+            border: 1px solid var(--cn-gold);
+            padding: 5px 12px;
+            font-size: 11.5px;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .btn-upload-sm:hover {
+            background: var(--cn-red-hover);
+            color: #ffffff;
+        }
+
+        /* Disc Selection Grid Responsive */
+        .discs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .discs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .disc-card {
+            background: #fffdfa;
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .disc-card:hover {
+            border-color: var(--cn-red);
+            box-shadow: 0 4px 12px rgba(158, 42, 43, 0.12);
+        }
+
+        .disc-info {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
+        }
+
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .disc-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--cn-red);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .disc-id {
+            font-size: 11px;
+            color: #777;
+            font-family: monospace;
+            margin: 2px 0 0 0;
+        }
+
+        /* Vanilla Record Time Tag */
+        .disc-vanilla-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            background: #f0e6d2;
+            color: #734f19;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        /* Audio Inspector Box */
+        .audio-inspector {
+            background: #faf6f0;
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+
+        .audio-filename {
+            font-size: 12px;
+            color: var(--cn-red);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .audio-player {
+            width: 100%;
+            height: 28px;
+            outline: none;
+            margin-bottom: 6px;
+        }
+
+        /* Highlight Duration Warning Banners */
+        .duration-alert-box {
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            line-height: 1.35;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .duration-alert-warning {
+            background-color: #ffebe8;
+            border: 1px solid #f5aca6;
+            color: #c02b2b;
+        }
+
+        .duration-alert-info {
+            background-color: #fff8e6;
+            border: 1px solid #fcd277;
+            color: #946200;
+        }
+
+        .duration-alert-ok {
+            background-color: #eafaf1;
+            border: 1px solid #a3e4d7;
+            color: #1e8449;
+        }
+
+        .disc-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px dashed rgba(197, 160, 89, 0.4);
+            padding-top: 8px;
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: #c93b3b;
+            font-size: 11.5px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(158, 42, 43, 0.3);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 999;
+            font-weight: 600;
+            padding: 2px 6px;
         }
 
-        .scrollToTopBtn.show {
-            opacity: 1;
-            visibility: visible;
+        .btn-remove:hover {
+            text-decoration: underline;
         }
 
-        .scrollToTopBtn:hover {
-            background: var(--cn-dark);
-            color: var(--cn-gold);
-            transform: translateY(-4px);
+        .counter-badge {
+            background: linear-gradient(135deg, var(--cn-red), #b53234);
+            color: var(--cn-gold-light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            border: 1px solid var(--cn-gold);
         }
 
-        /* --- Modal Pop-up --- */
+        /* Modal Overlay Responsive */
         .modal-overlay {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 15px;
         }
 
         .modal-overlay.active {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
         }
 
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 2px solid var(--cn-gold);
+        .modal-box {
+            background: #ffffff;
+            border: 2px solid var(--border-gold);
             border-radius: 18px;
-            max-width: 480px;
+            padding: 25px 20px;
             width: 100%;
-            padding: 24px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 380px;
             text-align: center;
-            animation: modalPopup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes modalPopup {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--cn-red);
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .modal-close:hover {
-            color: var(--cn-dark);
-        }
-
-        .modal-img-wrapper {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 15px auto;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--cn-gold);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .modal-img {
+        .progress-bar-bg {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .modal-badge {
-            display: inline-block;
-            background-color: var(--badge-new);
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-        }
-
-        .modal-title {
-            color: var(--cn-red);
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-        }
-
-        .modal-desc {
-            color: #555;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-
-        .modal-detail-box {
-            background-color: var(--bg-color);
-            border: 1px dashed var(--border-color);
+            background: #faf6f0;
+            border: 1px solid var(--border-gold);
             border-radius: 10px;
-            padding: 14px;
-            text-align: left;
-            font-size: 13.5px;
-            color: #333;
-            line-height: 1.6;
-            margin-bottom: 15px;
+            height: 12px;
+            overflow: hidden;
+            margin: 14px 0 8px 0;
         }
 
-        .modal-btn-link {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--cn-red), var(--cn-red-light));
-            color: #ffffff !important;
-            padding: 8px 20px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            border: 1px solid var(--cn-gold);
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--cn-gold), var(--cn-red));
+            height: 100%;
+            width: 0%;
+            transition: width 0.2s ease;
         }
 
-        .modal-btn-link:hover {
-            background: var(--cn-dark);
-            color: var(--cn-gold) !important;
+        /* Toast Notifications Responsive */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: calc(100vw - 40px);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 20px 12px;
-            }
-            .main-title {
-                font-size: 25px;
-            }
-            .section-container {
-                padding: 18px;
-            }
-            .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 14px;
-            }
-            .img-wrapper {
-                height: 110px;
-            }
-            .scrollToTopBtn {
-                bottom: 20px;
-                right: 20px;
-                width: 42px;
-                height: 42px;
-                font-size: 18px;
-            }
+        .toast-msg {
+            background: #ffffff;
+            border: 2px solid var(--border-gold);
+            border-left: 6px solid var(--cn-red);
+            color: var(--cn-dark);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ปุ่มเลื่อนขึ้นด้านบนสุด -->
-    <button type="button" id="scrollToTopBtn" class="scrollToTopBtn" onclick="scrollToTop()" title="เลื่อนขึ้นด้านบน">▲</button>
+    <div class="container">
 
-    <div class="main-wrapper">
-
-        <!-- Header -->
-        <div class="header-section">
-            <img src="https://i.pinimg.com/originals/31/13/22/31132288733f70e7c05d10bc3a104f59.gif" alt="Star Icon" class="header-icon"><br>
-            <h1 class="main-title">ศูนย์รวมงาน</h1>
-            <span class="main-subtitle">ห้ามนำไปแจกจ่ายหรือแชร์เว็บไซต์เป็นสาธารณะโดยเด็ดขาด</span>
-        </div>
-
-        <!-- ข้อมูลผู้จัดทำ -->
-        <div class="creator-card">
-            <img src="https://i.pinimg.com/originals/e1/a3/11/e1a311b494e0e5b9c19fffeae33e395a.gif" class="creator-icon" alt="Cat Icon">
-            <h1 class="creator-title">ข้อมูลผู้จัดทำเว็บไซต์</h1>
-        
-            <div class="info-group">
-                <p><span class="info-label">ชื่อผู้จัดทำ:</span> Nuttsumechan</p>
-                <p><span class="info-label">อัพเดทล่าสุดวันที่:</span> 20/10/2569</p>
-                <p><span class="info-label"> © :</span> ประกาศลิขสิทธิ์ / Copyright Notice: ระบบ โค้ด และไฟล์ผลงานทั้งหมด ได้รับการคุ้มครองตาม พ.ศ. 2537 โดย © 2026 Nuttsumechan ห้ามมิให้ทำการคัดลอก ดัดแปลง แก้ไข หรือแจกจ่ายโดยมิได้รับอนุญาต</p>
-                <p><span class="info-label">ข้อกฎหมาย:</span> <a href="momo_key_vip.html" class="info-link">ข้อกฎหมายกรณีละเมิดและแงะดัดแปลงไฟล์ Add-On</a></p>
-            </div>
-
-            <form action="about_key_vip.html">
-                <button type="submit" class="btn-cn">← ย้อนกลับ</button>
-            </form>
-        </div>
-
-        <!-- ส่วนค้นหาและกรองหมวดหมู่ -->
-        <div class="filter-section">
-            <div class="search-box">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 ค้นหารายการลงใหม่ (ชื่อระบบ หรือ Add-on)..." onkeyup="filterItems()">
-            </div>
-        </div>
-
-        <div id="noResults" class="no-results">ไม่พบข้อมูลระบบหรือ Add-on ที่ลงใหม่ตรงตามคำค้นหา</div>
-
-        <!-- 1: ระบบเว็บไซต์ที่ทำเอง -->
-        <div class="section-container" data-category="websitentt">
-            <div class="category-header">
-                <div class="category-header-left">
-                    <img src="https://i.pinimg.com/originals/00/d4/fa/00d4fa4d0dd818876d77c2067cc8ce4b.gif" class="category-icon" alt="Website NTT">
-                    <h2 class="category-title">ระบบเว็บไซต์ที่ทำเอง</h2>
+        <!-- Top Header Bar -->
+        <header class="header-bar">
+            <div class="header-title-box">
+                <div class="header-icon">💿</div>
+                <div>
+                    <h1 class="header-title">Minecraft Record Pack Studio</h1>
+                    <p class="header-sub">เครื่องมือสร้างแอดออนเปลี่ยนเพลงแผ่นเสียง Minecraft Bedrock (.mcpack)</p>
                 </div>
-                <span class="section-badge">New Arrivals</span>
             </div>
-            
-            <div class="cards-grid">
-                <!-- การ์ดที่ 1 -->
-                <div class="card" onclick="openGeneralModal('ระบบ รูปภาพใน แอดออน', 'เวอร์ชั่น V.0.1', 'ระบบดึงรูปภาพจากหลายไฟล์แอดออนพร้อมกัน', 'https://i.pinimg.com/736x/28/ec/30/28ec30fd4b32fc308af1fa824bdaac77.jpg', 'ระบบดึงรูปภาพจากหลายไฟล์แอดออนพร้อมกัน พร้อมระบุชื่อไฟล์และที่อยู่รูปภาพชัดเจน', 'addon_images_key_vip.html', 'ไปยังเว็บไซต์ ➔')">
-                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
-                    <div class="img-wrapper">
-                        <img src="https://i.pinimg.com/736x/28/ec/30/28ec30fd4b32fc308af1fa824bdaac77.jpg" alt="ระบบ รูปภาพใน แอดออน" class="card-img" onerror="this.src='https://hthaxoru-sudo.github.io/Images-in-add-ons/'">
+
+            <button onclick="generateMCPack()" class="btn-export">
+                <i class="fa-solid fa-download"></i>
+                <span>ดาวน์โหลดแอดออน (.mcpack)</span>
+            </button>
+        </header>
+
+        <!-- Notice Banner -->
+        <div class="notice-banner">
+            <div>
+                <strong>✨ ทำแอดออนเพลงง่ายๆ ใน 3 สเต็ป:</strong> 
+                1. ตั้งชื่อแพ็ก &nbsp;•&nbsp; 2. เลือกแผ่นเสียงที่ต้องการเปลี่ยนและใส่เพลง &nbsp;•&nbsp; 3. กดดาวน์โหลดนำไปลงในเกมได้ทันที!
+            </div>
+            <span class="notice-badge">
+                <i class="fa-solid fa-feather mr-1"></i> ระบบจะส่งออกเฉพาะแผ่นที่คุณเลือกเท่านั้น (ไม่หนักแอดออน)
+            </span>
+        </div>
+
+        <!-- Step 1: Pack Settings Card -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="step-badge">1</span>
+                    <span>ตั้งชื่อและรูปปกของแอดออน</span>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <!-- Pack Name Input -->
+                <div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            ชื่อแพ็กเพลงของคุณ (Pack Name) <span style="color: var(--cn-red);">*</span>
+                        </label>
+                        <input type="text" id="packNameInput" value="เพลงไทยสุดมันส์ Custom Discs" 
+                            placeholder="เช่น เพลงฮิตติดหู Custom Music" class="input-cn">
+                        <span style="font-size: 11px; color: #777; margin-top: 4px; display: block;">
+                            ชื่อนี้จะไปปรากฏในหน้าเลือก Resource Packs ในเกม Minecraft
+                        </span>
                     </div>
-                    <div><span class="type-badge type-website">เว็บไซต์</span></div>
-                    <div class="card-title">ระบบ รูปภาพใน แอดออน</div>
-                    <div class="card-desc">ระบบดึงรูปภาพจากหลายไฟล์แอดออนพร้อมกัน พร้อมระบุชื่อไฟล์และที่อยู่รูปภาพชัดเจน</div>
+
+                    <!-- Display Locked Description Notice -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            คำอธิบายแอดออน (Description) <span style="color: #a87910; font-weight: normal;">(ระบบล็อกค่าไว้)</span>
+                        </label>
+                        <div class="input-cn locked-input">
+                            <span id="lockedDescriptionDisplay"></span>
+                            <i class="fa-solid fa-lock" style="color: #aaa;"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- การ์ดที่ 2 -->
-                <div class="card" onclick="openGeneralModal('Add-on เปลี่ยนแผ่นเสียง Minecraft', 'เวอร์ชั่น V.0.1', 'เปลี่ยนแผ่นเสียง Minecraft ปกติให้เป็นเพลงอย่างที่เราต้องการ', 'https://i.pinimg.com/736x/08/df/f1/08dff19bd3b8ac4e4f99dafadf1d9e06.jpg', 'เปลี่ยนแผ่นเสียง Minecraft ปกติให้เป็นเพลงอย่างที่เราต้องการ', 'music_addon_key_vip.html', 'ไปยังเว็บไซต์ ➔')">
-                    <span class="badge-new">เวอร์ชั่น V.0.1</span>
-                    <div class="img-wrapper">
-                        <img src="https://i.pinimg.com/736x/08/df/f1/08dff19bd3b8ac4e4f99dafadf1d9e06.jpg" alt="ทำ Add-on เองได้ง่าย" class="card-img" onerror="this.src='https://placehold.co/400x250/9e2a2b/ffffff?text=Web+NTT'">
+                <!-- Pack Icon Upload -->
+                <div class="icon-uploader-box">
+                    <div class="icon-preview-wrapper">
+                        <img id="iconPreview" style="display: none;">
+                        <div id="iconPlaceholder" style="text-align: center; color: #aaa;">
+                            <i class="fa-solid fa-image" style="font-size: 18px;"></i>
+                            <span style="display: block; font-size: 9px; margin-top: 2px;">รูปปก</span>
+                        </div>
                     </div>
-                    <div><span class="type-badge type-website">เว็บไซต์</span></div>
-                    <div class="card-title">Add-on เปลี่ยนแผ่นเสียง Minecraft</div>
-                    <div class="card-desc">เปลี่ยนแผ่นเสียง Minecraft ปกติให้เป็นเพลงอย่างที่เราต้องการ</div>
+                    <div>
+                        <span style="font-size: 12.5px; font-weight: 700; color: var(--cn-red); display: block;">รูปปก Add-on</span>
+                        <span style="font-size: 10.5px; color: #666; display: block; margin-top: 2px;">
+                            รองรับ JPG/PNG (ย่อขนาดเป็น 128x128 ให้อัตโนมัติ)
+                        </span>
+                        <label class="btn-upload-sm">
+                            <i class="fa-solid fa-upload"></i> เลือกรูปภาพ
+                            <input type="file" id="iconInput" accept="image/*" style="display: none;" onchange="handleIconUpload(event)">
+                        </label>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Step 2: Music Discs Selector Card -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="step-badge">2</span>
+                    <span>เลือกแผ่นเสียงที่ต้องการเปลี่ยนเพลง</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span id="discCounterBadge" class="counter-badge">ตั้งค่าแล้ว 0 แผ่น</span>
+                    <button onclick="clearAllDiscs()" style="background: none; border: none; color: #c93b3b; font-size: 12px; cursor: pointer; text-decoration: underline;">
+                        ล้างข้อมูลทั้งหมด
+                    </button>
+                </div>
+            </div>
+
+            <p style="font-size: 12.5px; color: #666; margin-top: 0; margin-bottom: 16px;">
+                คลิกอัปโหลดไฟล์เพลงเฉพาะแผ่นที่ต้องการเปลี่ยน (ระบบจะตรวจเวลาเพลงเทียบกับเวลามาตรฐานของแผ่นในเกมให้ทันที)
+            </p>
+
+            <!-- Discs Grid Container -->
+            <div id="discsGrid" class="discs-grid">
+                <!-- Disc Cards render dynamically via JavaScript -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Progress Modal -->
+    <div id="progressModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 38px; color: var(--cn-red); margin-bottom: 8px;">
+                <i class="fa-solid fa-compact-disc fa-spin"></i>
+            </div>
+            <h3 id="modalTitle" style="margin: 0 0 4px 0; color: var(--cn-red); font-size: 17px;">กำลังสร้างแอดออน...</h3>
+            <p id="modalStatus" style="margin: 0; font-size: 12px; color: #666;">กำลังแปลงไฟล์เพลงและจัดเตรียมระบบ...</p>
+
+            <div class="progress-bar-bg">
+                <div id="progressBar" class="progress-bar-fill"></div>
+            </div>
+            <span id="progressPercent" style="font-size: 13px; font-weight: 700; color: var(--cn-red);">0%</span>
         </div>
     </div>
 
-    <!-- โครงสร้าง Pop-up Modal -->
-    <div id="infoModal" class="modal-overlay" onclick="closeModal(event)">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal(event)">&times;</span>
-            <div class="modal-img-wrapper">
-                <img id="modalImg" class="modal-img" src="" alt="รูปปก">
-            </div>
-            <span id="modalBadge" class="modal-badge">แท็ก</span>
-            <h3 id="modalTitle" class="modal-title">หัวข้อ</h3>
-            <p id="modalDesc" class="modal-desc">คำอธิบายย่อ</p>
-            <div id="modalDetailBox" class="modal-detail-box">รายละเอียด...</div>
+    <!-- Notification Toast Container -->
+    <div id="toastContainer"></div>
 
-            <!-- 📌 จุดที่แก้ไข: ลบ target="_blank" ออกแล้ว -->
-            <a id="modalLinkBtn" href="#" class="modal-btn-link" style="display: none;">ไปยังหน้ารายละเอียด ➔</a>
-        </div>
-    </div>
-
-    <!-- Script ควบคุมการทำงาน -->
+    <!-- JavaScript Application Logic -->
     <script>
-        function filterItems() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
-            const sections = document.querySelectorAll('.section-container');
-            let totalVisibleCards = 0;
+        // =========================================================================
+        // [แก้ไขคำอธิบายแอดออนได้ที่นี่ / SET DEFAULT DESCRIPTION HERE]
+        // คุณสามารถแก้ไขข้อความคำอธิบายแอดออนที่จะฝังลงในแอดออน Minecraft ได้ที่ตัวแปรนี้:
+        // =========================================================================
+        const PACK_DESCRIPTION_DEFAULT = "Custom Music Discs Add-on for Minecraft Bedrock (Created with Record Studio)";
 
-            sections.forEach(section => {
-                const cards = section.querySelectorAll('.card');
-                let visibleCardsInSection = 0;
 
-                cards.forEach(card => {
-                    const title = card.querySelector('.card-title').textContent.toLowerCase();
-                    const desc = card.querySelector('.card-desc').textContent.toLowerCase();
-                    const matchesSearch = title.includes(searchText) || desc.includes(searchText);
+        // Catalog of Vanilla Minecraft Bedrock Music Discs with exact vanilla durations (in seconds)
+        const MINECRAFT_DISCS = [
+            { id: "13", name: "Music Disc 13", label: "13", durationSec: 178, outerColor: "#e2b653", innerColor: "#70561e" }, // 2:58
+            { id: "cat", name: "Music Disc Cat", label: "Cat", durationSec: 185, outerColor: "#309a47", innerColor: "#175224" }, // 3:05
+            { id: "blocks", name: "Music Disc Blocks", label: "Blocks", durationSec: 345, outerColor: "#e5672d", innerColor: "#80340f" }, // 5:45
+            { id: "chirp", name: "Music Disc Chirp", label: "Chirp", durationSec: 185, outerColor: "#c13b35", innerColor: "#611713" }, // 3:05
+            { id: "far", name: "Music Disc Far", label: "Far", durationSec: 174, outerColor: "#74b243", innerColor: "#325418" }, // 2:54
+            { id: "mall", name: "Music Disc Mall", label: "Mall", durationSec: 197, outerColor: "#a8549e", innerColor: "#52234d" }, // 3:17
+            { id: "mellohi", name: "Music Disc Mellohi", label: "Mellohi", durationSec: 96, outerColor: "#c775a2", innerColor: "#693352" }, // 1:36
+            { id: "stal", name: "Music Disc Stal", label: "Stal", durationSec: 150, outerColor: "#2d2a2c", innerColor: "#111011" }, // 2:30
+            { id: "strad", name: "Music Disc Strad", label: "Strad", durationSec: 188, outerColor: "#ded9cd", innerColor: "#78746a" }, // 3:08
+            { id: "ward", name: "Music Disc Ward", label: "Ward", durationSec: 251, outerColor: "#446950", innerColor: "#1b2e22" }, // 4:11
+            { id: "11", name: "Music Disc 11", label: "11", durationSec: 71, outerColor: "#403e3d", innerColor: "#181717" }, // 1:11
+            { id: "wait", name: "Music Disc Wait", label: "Wait", durationSec: 238, outerColor: "#3c869b", innerColor: "#163f4a" }, // 3:58
+            { id: "pigstep", name: "Music Disc Pigstep", label: "Pigstep", durationSec: 148, outerColor: "#b34226", innerColor: "#54190b" }, // 2:28
+            { id: "otherside", name: "Music Disc otherside", label: "otherside", durationSec: 195, outerColor: "#228b7e", innerColor: "#0d3b35" }, // 3:15
+            { id: "5", name: "Music Disc 5", label: "5", durationSec: 178, outerColor: "#293233", innerColor: "#101516" }, // 2:58
+            { id: "relic", name: "Music Disc Relic", label: "Relic", durationSec: 218, outerColor: "#924c29", innerColor: "#421e0d" }, // 3:38
+            { id: "creator", name: "Music Disc Creator", label: "Creator", durationSec: 176, outerColor: "#548888", innerColor: "#223d3d" }, // 2:56
+            { id: "creator_music_box", name: "Music Disc Creator (Music Box)", label: "Music Box", durationSec: 73, outerColor: "#446869", innerColor: "#1b2c2d" }, // 1:13
+            { id: "precipice", name: "Music Disc Precipice", label: "Precipice", durationSec: 299, outerColor: "#7b508d", innerColor: "#3a2145" } // 4:59
+        ];
 
-                    if (matchesSearch) {
-                        card.style.display = 'flex';
-                        visibleCardsInSection++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+        // Global State for Uploaded Tracks
+        const userUploadedTracks = {};
+        let customPackIconBlob = null;
 
-                if (visibleCardsInSection > 0) {
-                    section.style.display = 'block';
-                    totalVisibleCards += visibleCardsInSection;
+        // Utility: Format Seconds to MM:SS
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('lockedDescriptionDisplay').textContent = PACK_DESCRIPTION_DEFAULT;
+            renderDiscCards();
+        });
+
+        // SVG Pixel Art Renderer for Minecraft Discs
+        function createMinecraftDiscSVG(outerColor, innerColor) {
+            return `
+                <svg width="42" height="42" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="pixelated" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                    <!-- Outer Rim -->
+                    <path d="M5 1H11V2H13V3H14V5H15V11H14V13H13V14H11V15H5V14H3V13H2V11H1V5H2V3H3V2H5V1Z" fill="#111115"/>
+                    <path d="M5 2H11V3H13V5H14V11H13V13H11V14H5V13H3V11H2V5H3V3H5V2Z" fill="#1D1E24"/>
+                    
+                    <!-- Vinyl Grooves -->
+                    <path d="M6 3H10V4H12V6H13V10H12V12H10V13H6V12H4V10H3V6H4V4H6V3Z" fill="#292A34"/>
+                    <path d="M6 4H10V5H11V6H12V10H11V11H10V12H6V11H5V10H4V6H5V5H6V4Z" fill="#14151B"/>
+
+                    <!-- Custom Colored Ring -->
+                    <path d="M6 5H10V6H11V10H10V11H6V10H5V6H6V5Z" fill="${outerColor}"/>
+                    
+                    <!-- Inner Color Ring -->
+                    <path d="M7 6H9V7H10V9H9V10H7V9H6V7H7V6Z" fill="${innerColor}"/>
+
+                    <!-- Center Hole -->
+                    <rect x="7" y="7" width="2" height="2" fill="#090A0D"/>
+                </svg>
+            `;
+        }
+
+        // Render Cards for each Disc
+        function renderDiscCards() {
+            const container = document.getElementById('discsGrid');
+            container.innerHTML = '';
+
+            MINECRAFT_DISCS.forEach(disc => {
+                const card = document.createElement('div');
+                card.id = `card-${disc.id}`;
+                card.className = "disc-card";
+
+                const svgIcon = createMinecraftDiscSVG(disc.outerColor, disc.innerColor);
+
+                card.innerHTML = `
+                    <div class="disc-info">
+                        <div style="flex-shrink: 0;">
+                            ${svgIcon}
+                        </div>
+                        <div style="overflow: hidden;">
+                            <h3 class="disc-title">${disc.name}</h3>
+                            <p class="disc-id">ID: ${disc.id}</p>
+                            <span class="disc-vanilla-time">
+                                <i class="fa-solid fa-clock"></i> ความยาวเดิม: ${formatDuration(disc.durationSec)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Audio File Player & Inspector Box -->
+                    <div id="inspector-${disc.id}" class="audio-inspector" style="display: none;">
+                        <span id="filename-${disc.id}" class="audio-filename"></span>
+                        <audio id="audio-${disc.id}" controls class="audio-player"></audio>
+                        
+                        <!-- Dynamic Duration Alert Banner -->
+                        <div id="durationAlert-${disc.id}"></div>
+                    </div>
+
+                    <!-- Upload Controls -->
+                    <div class="disc-actions">
+                        <label class="btn-upload-sm" style="margin: 0;">
+                            <i class="fa-solid fa-music"></i> <span id="btnLabel-${disc.id}">เลือกเพลง</span>
+                            <input type="file" accept="audio/*" style="display: none;" onchange="handleAudioUpload(event, '${disc.id}')">
+                        </label>
+
+                        <button id="removeBtn-${disc.id}" onclick="removeDiscAudio('${disc.id}')" class="btn-remove" style="display: none;">
+                            <i class="fa-solid fa-trash-can"></i> ลบ
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            updateDiscCounter();
+        }
+
+        // Handle Audio Upload & Calculate Duration Mismatch
+        async function handleAudioUpload(event, discId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const disc = MINECRAFT_DISCS.find(d => d.id === discId);
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            try {
+                showToast(`กำลังอ่านไฟล์เพลงสำหรับ ${disc.name}...`);
+                
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                const audioUrl = URL.createObjectURL(file);
+                const userDuration = audioBuffer.duration;
+
+                userUploadedTracks[discId] = {
+                    file: file,
+                    audioBuffer: audioBuffer,
+                    fileName: file.name,
+                    audioUrl: audioUrl,
+                    userDuration: userDuration
+                };
+
+                // Update Inspector UI
+                document.getElementById(`inspector-${discId}`).style.display = 'block';
+                document.getElementById(`filename-${discId}`).textContent = file.name;
+                document.getElementById(`btnLabel-${discId}`).textContent = "เปลี่ยนเพลง";
+                document.getElementById(`removeBtn-${discId}`).style.display = 'inline-block';
+
+                const audioPlayer = document.getElementById(`audio-${discId}`);
+                audioPlayer.src = audioUrl;
+
+                // Duration Inspector & Warning Banner Generator
+                const alertContainer = document.getElementById(`durationAlert-${discId}`);
+                const vanillaDuration = disc.durationSec;
+                const userTimeStr = formatDuration(userDuration);
+                const vanillaTimeStr = formatDuration(vanillaDuration);
+
+                if (userDuration > vanillaDuration + 2) {
+                    // Song is LONGER than Vanilla disc duration
+                    const diffTimeStr = formatDuration(userDuration - vanillaDuration);
+                    alertContainer.className = "duration-alert-box duration-alert-warning";
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 13px; margin-top: 2px;"></i>
+                        <div>
+                            <strong>⚠️ เพลงยาวเกินแผ่นเสียง (${userTimeStr} / เดิม ${vanillaTimeStr})</strong><br>
+                            เพลงจะเล่นยาวเกินเวลาของแผ่นเดิมไป ${diffTimeStr} (ผู้เล่นอาจไม่ได้ยินท่อนท้ายในเกม หรือเพลงจะถูกตัดจบก่อน)
+                        </div>
+                    `;
+                } else if (userDuration < vanillaDuration - 5) {
+                    // Song is SHORTER than Vanilla disc duration
+                    alertContainer.className = "duration-alert-box duration-alert-info";
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-circle-info" style="font-size: 13px; margin-top: 2px;"></i>
+                        <div>
+                            <strong>ℹ️ เพลงสั้นกว่าแผ่นเสียง (${userTimeStr} / เดิม ${vanillaTimeStr})</strong><br>
+                            เมื่อเพลงเล่นจบแล้ว แผ่นเสียงจะเงียบไปประมาณ ${formatDuration(vanillaDuration - userDuration)} ก่อนจบรอบ
+                        </div>
+                    `;
                 } else {
-                    section.style.display = 'none';
+                    // Perfect Duration Match
+                    alertContainer.className = "duration-alert-box duration-alert-ok";
+                    alertContainer.innerHTML = `
+                        <i class="fa-solid fa-circle-check" style="font-size: 13px; margin-top: 2px;"></i>
+                        <div>
+                            <strong>✅ ความยาวใกล้เคียงแผ่นเดิม (${userTimeStr})</strong> เล่นได้สมบูรณ์ในเกม
+                        </div>
+                    `;
                 }
+
+                updateDiscCounter();
+                showToast(`ใส่เพลงให้ ${disc.name} เรียบร้อยแล้ว`);
+            } catch (err) {
+                console.error(err);
+                showToast("ไม่สามารถอ่านไฟล์เสียงนี้ได้ กรุณาใช้ไฟล์ MP3, WAV หรือ OGG");
+            } finally {
+                audioCtx.close();
+            }
+        }
+
+        function removeDiscAudio(discId) {
+            if (userUploadedTracks[discId]) {
+                URL.revokeObjectURL(userUploadedTracks[discId].audioUrl);
+                delete userUploadedTracks[discId];
+            }
+
+            document.getElementById(`inspector-${discId}`).style.display = 'none';
+            document.getElementById(`btnLabel-${discId}`).textContent = "เลือกเพลง";
+            document.getElementById(`removeBtn-${discId}`).style.display = 'none';
+            
+            updateDiscCounter();
+            showToast("ลบเพลงออกเรียบร้อยแล้ว");
+        }
+
+        function clearAllDiscs() {
+            Object.keys(userUploadedTracks).forEach(discId => removeDiscAudio(discId));
+        }
+
+        function updateDiscCounter() {
+            const count = Object.keys(userUploadedTracks).length;
+            document.getElementById('discCounterBadge').textContent = `ตั้งค่าแล้ว ${count} แผ่น`;
+        }
+
+        // Icon Upload Handler
+        function handleIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 128;
+                canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 128, 128);
+
+                canvas.toBlob((blob) => {
+                    customPackIconBlob = blob;
+                    const preview = document.getElementById('iconPreview');
+                    preview.src = URL.createObjectURL(blob);
+                    preview.style.display = 'block';
+                    document.getElementById('iconPlaceholder').style.display = 'none';
+                    showToast("อัปเดตรูปปกเรียบร้อยแล้ว (ย่อขนาดเป็น 128x128)");
+                }, 'image/png');
+            };
+            img.src = URL.createObjectURL(file);
+        }
+
+        // Create Default Pack Icon
+        function createDefaultPackIconBlob() {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 128;
+                canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+
+                // Dark Red Background
+                ctx.fillStyle = "#9e2a2b";
+                ctx.fillRect(0, 0, 128, 128);
+
+                // Gold Border
+                ctx.strokeStyle = "#d4af37";
+                ctx.lineWidth = 8;
+                ctx.strokeRect(0, 0, 128, 128);
+
+                // Disc Graphic
+                ctx.beginPath();
+                ctx.arc(64, 64, 38, 0, Math.PI * 2);
+                ctx.fillStyle = "#111115";
+                ctx.fill();
+
+                // Gold Ring
+                ctx.beginPath();
+                ctx.arc(64, 64, 16, 0, Math.PI * 2);
+                ctx.fillStyle = "#d4af37";
+                ctx.fill();
+
+                // Center Hole
+                ctx.beginPath();
+                ctx.arc(64, 64, 6, 0, Math.PI * 2);
+                ctx.fillStyle = "#9e2a2b";
+                ctx.fill();
+
+                canvas.toBlob((blob) => resolve(blob), 'image/png');
             });
-
-            const noResults = document.getElementById('noResults');
-            if (totalVisibleCards === 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
         }
 
-        function openGeneralModal(title, badge, desc, imgSrc, detail, linkUrl, btnText) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalBadge').textContent = badge;
-            document.getElementById('modalDesc').textContent = desc;
-            document.getElementById('modalImg').src = imgSrc;
-            document.getElementById('modalDetailBox').textContent = detail;
+        // Convert Audio Buffer to OGG/WAV Audio Format Blob
+        function convertAudioBufferToBlob(audioBuffer) {
+            return new Promise((resolve) => {
+                const numOfChan = audioBuffer.numberOfChannels;
+                const length = audioBuffer.length * numOfChan * 2 + 44;
+                const buffer = new ArrayBuffer(length);
+                const view = new DataView(buffer);
+                const channels = [];
+                let sample;
+                let offset = 0;
+                let pos = 0;
 
-            const linkBtn = document.getElementById('modalLinkBtn');
-            if (linkUrl && linkUrl !== '#' && linkUrl !== '') {
-                linkBtn.href = linkUrl;
-                linkBtn.textContent = btnText || 'ไปยังหน้ารายละเอียด ➔';
-                linkBtn.style.display = 'inline-block';
-            } else {
-                linkBtn.style.display = 'none';
-            }
+                function writeString(str) {
+                    for (let i = 0; i < str.length; i++) {
+                        view.setUint8(pos++, str.charCodeAt(i));
+                    }
+                }
 
-            document.getElementById('infoModal').classList.add('active');
-        }
+                function setUint16(data) {
+                    view.setUint16(pos, data, true);
+                    pos += 2;
+                }
 
-        function closeModal(event) {
-            if (event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
-                document.getElementById('infoModal').classList.remove('active');
-            }
-        }
+                function setUint32(data) {
+                    view.setUint32(pos, data, true);
+                    pos += 4;
+                }
 
-        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+                writeString('RIFF');
+                setUint32(length - 8);
+                writeString('WAVE');
+                writeString('fmt ');
+                setUint32(16);
+                setUint16(1);  // PCM
+                setUint16(numOfChan);
+                setUint32(audioBuffer.sampleRate);
+                setUint32(audioBuffer.sampleRate * 2 * numOfChan);
+                setUint16(numOfChan * 2);
+                setUint16(16);
+                writeString('data');
+                setUint32(length - pos - 4);
 
-        window.onscroll = function() {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                scrollToTopBtn.classList.add("show");
-            } else {
-                scrollToTopBtn.classList.remove("show");
-            }
-        };
+                for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+                    channels.push(audioBuffer.getChannelData(i));
+                }
 
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
+                while (offset < audioBuffer.length) {
+                    for (let i = 0; i < numOfChan; i++) {
+                        sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                        sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                        view.setInt16(pos, sample, true);
+                        pos += 2;
+                    }
+                    offset++;
+                }
+
+                resolve(new Blob([buffer], { type: 'audio/ogg' }));
             });
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Export MCPack
+        async function generateMCPack() {
+            const selectedDiscIds = Object.keys(userUploadedTracks);
+
+            if (selectedDiscIds.length === 0) {
+                showToast("กรุณาเลือกและอัปโหลดไฟล์เพลงอย่างน้อย 1 แผ่นก่อนดาวน์โหลด!");
+                return;
+            }
+
+            const packName = document.getElementById('packNameInput').value.trim() || "Custom Music Pack";
+            const packDescription = PACK_DESCRIPTION_DEFAULT;
+
+            const modal = document.getElementById('progressModal');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const modalStatus = document.getElementById('modalStatus');
+            modal.classList.add('active');
+
+            const zip = new JSZip();
+
+            // 1. Build manifest.json
+            const manifest = {
+                format_version: 2,
+                header: {
+                    name: packName,
+                    description: packDescription,
+                    uuid: generateUUID(),
+                    version: [1, 0, 0],
+                    min_engine_version: [1, 20, 0]
+                },
+                modules: [
+                    {
+                        type: "resources",
+                        uuid: generateUUID(),
+                        version: [1, 0, 0]
+                    }
+                ]
+            };
+            zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+
+            // 2. Build sound_definitions.json STRICTLY ONLY for selected discs
+            const soundDefinitions = {
+                format_version: "1.14.0",
+                sound_definitions: {}
+            };
+
+            const recordsFolder = zip.folder("sounds/music/game/records");
+
+            let processedCount = 0;
+            const totalToProcess = selectedDiscIds.length;
+
+            for (const discId of selectedDiscIds) {
+                const item = userUploadedTracks[discId];
+                modalStatus.textContent = `กำลังประมวลผลแผ่นเพลง: ${discId}...`;
+
+                soundDefinitions.sound_definitions[`music.game.${discId}`] = {
+                    category: "record",
+                    sounds: [
+                        {
+                            name: `sounds/music/game/records/${discId}`,
+                            stream: true,
+                            load_on_low_memory: true
+                        }
+                    ]
+                };
+
+                const oggBlob = await convertAudioBufferToBlob(item.audioBuffer);
+                recordsFolder.file(`${discId}.ogg`, oggBlob);
+
+                processedCount++;
+                const percent = Math.round((processedCount / totalToProcess) * 85);
+                progressBar.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+            }
+
+            zip.file("sounds/sound_definitions.json", JSON.stringify(soundDefinitions, null, 2));
+
+            // 3. Add pack_icon.png
+            modalStatus.textContent = "กำลังบีบอัดรูปปกแอดออน...";
+            const iconBlob = customPackIconBlob || await createDefaultPackIconBlob();
+            zip.file("pack_icon.png", iconBlob);
+
+            progressBar.style.width = "95%";
+            progressPercent.textContent = "95%";
+            modalStatus.textContent = "กำลังบีบอัดไฟล์ .mcpack...";
+
+            // 4. Export as .mcpack File
+            const content = await zip.generateAsync({ type: "blob" });
+            
+            progressBar.style.width = "100%";
+            progressPercent.textContent = "100%";
+
+            const sanitizedFileName = packName.replace(/[^a-zA-Z0-9\u0E00-\u0E7F]/g, '_').toLowerCase();
+            saveAs(content, `${sanitizedFileName}.mcpack`);
+
+            setTimeout(() => {
+                modal.classList.remove('active');
+                showToast("สร้างไฟล์ .mcpack สำเร็จ! นำไปเปิดใช้งานใน Minecraft ได้เลย");
+            }, 500);
+        }
+
+        // Notification Toast Helper
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info" style="color: var(--cn-red);"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
     </script>
 </body>
