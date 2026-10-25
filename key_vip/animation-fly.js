@@ -25,4 +25,4 @@ window.ANIMATION_LIBRARY.fly = {"format_version": "1.8.0",
 			}
 		}
 	}
-}
+};
